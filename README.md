@@ -1,4 +1,4 @@
-# Urlly
+# Urlly (Pronounced "you-really?")
 
 URL and URI parsing for Nim for C/JS backends. Similar api to browsers's `window.location`.
 

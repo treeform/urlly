@@ -1,4 +1,4 @@
-import urlly
+import urlly, strutils
 
 block:
   let test = "foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose"
@@ -48,16 +48,18 @@ block:
   assert url.fragment == ""
   assert $url == test
 
+  var i = 1
   for (k, v) in url.query:
     if k == "leg":
-      echo v
+      assert v == $i
+      inc i
 
   assert url.query["missing"] == ""
 
 block:
   let test = "?name=&age&legs=4"
   let url = parseUrl(test)
-  echo url.query
+  assert url.query == @[("name", ""), ("age", ""), ("legs", "4")]
 
 block:
   var url = Url()
@@ -74,5 +76,5 @@ block:
   url.query["nothing"] = ""
   url.query["unicode"] = "шеллы"
   url.query["specials"] = "\n\t\b\r\"+&="
-  echo $url
+  assert $url == "example.com?site=https%3A%2F%2Fnim-lang.org&https%3A%2F%2Fnim-lang.org=nice%21%21%21&nothing=&unicode=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&specials=%0A%09%08%0D%22%2B%26%3D"
   assert $parseUrl($url) == $url
