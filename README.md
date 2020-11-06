@@ -33,7 +33,7 @@ $uri == test
 
 You can always turn a `Uri` into a `string` with the `$` function.
 
-```
+```nim
 var uri = Uri()
 uri.hostname = "example.com"
 uri.query["q"] = "foo"
@@ -55,21 +55,27 @@ if k == "leg":
 
 But for most use cases a special `[]` is provided. This is the most common use of the query.
 
-```
+```nim
 uri.query["name"] == "ferret"
 ```
 
 If the key repeats multiple times only the first one is returned using the `[]` method. Use the for loop method if you need to support multiple keys or preserves special ordering.
 
-```
+```nim
 uri.query["leg"] == "1"
 ```
 
 Missing keys are just empty strings, no need to check if its there or handle exceptions:
 
-```
+```nim
 uri.query["missing"] == ""
 ````
+
+You can also modify the query string with `[]=` method:
+
+```nim
+uri.query["missing"] = "no more!"
+```
 
 # API: uriiy
 
