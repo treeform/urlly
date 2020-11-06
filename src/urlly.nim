@@ -1,6 +1,6 @@
-## Parses URIs and URLs
+## Parses URls and URLs
 ##
-##  The following are two example URIs and their component parts:
+##  The following are two example URls and their component parts:
 ##        foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose
 ##        \_/   \___/ \_____/ \_________/ \__/\_________/ \_________/ \__/
 ##         |      |       |       |        |       |          |         |
@@ -10,20 +10,20 @@
 import strutils
 
 type
-  Uri* = ref object
+  Url* = ref object
     scheme*, username*, password*: string
     hostname*, port*, path*, fragment*: string
     query*: seq[(string, string)]
 
 func `[]`*(query: seq[(string, string)], key: string): string =
-  ## Get a key out of uri.query.
+  ## Get a key out of url.query.
   ## Use a for loop to get multiple keys.
   for (k, v) in query:
     if k == key:
       return v
 
 func `[]=`*(query: var seq[(string, string)], key, value: string) =
-  ## Sets a key in the uri.query. If key is not there appends a
+  ## Sets a key in the url.query. If key is not there appends a
   ## new key-value pair at the end.
   for pair in query.mitems:
     if pair[0] == key:
@@ -32,7 +32,7 @@ func `[]=`*(query: var seq[(string, string)], key, value: string) =
   query.add((key, value))
 
 func encodeUrlComponent*(s: string): string =
-  ## Takes a string and encodes it in the URI format.
+  ## Takes a string and encodes it in the URl format.
   result = newStringOfCap(s.len)
   for c in s:
     case c:
@@ -45,7 +45,7 @@ func encodeUrlComponent*(s: string): string =
         result.add toHex(ord(c), 2)
 
 func decodeUrlComponent*(s: string): string =
-  ## Takes a string and decodes it from the URI format.
+  ## Takes a string and decodes it from the URl format.
   result = newStringOfCap(s.len)
   var i = 0
   while i < s.len:
@@ -59,14 +59,14 @@ func decodeUrlComponent*(s: string): string =
         result.add s[i]
     inc i
 
-func parseUri*(s: string): Uri =
-  ## Parses a URI or a URL into the Uri object.
+func parseUrl*(s: string): Url =
+  ## Parses a URl or a URL into the Url object.
   var s = s
-  var uri = Uri()
+  var url = Url()
 
   let hasFragment = s.rfind('#')
   if hasFragment != -1:
-    uri.fragment = s[hasFragment + 1 .. ^1]
+    url.fragment = s[hasFragment + 1 .. ^1]
     s = s[0 .. hasFragment - 1]
 
   let hasSearch = s.rfind('?')
@@ -83,11 +83,11 @@ func parseUri*(s: string): Uri =
           (decodeUrlComponent(pair[0]), "")
         else:
           ("", "")
-      uri.query.add(kv)
+      url.query.add(kv)
 
   let hasScheme = s.find("://")
   if hasScheme != -1:
-    uri.scheme = s[0 .. hasScheme - 1]
+    url.scheme = s[0 .. hasScheme - 1]
     s = s[hasScheme + 3 .. ^1]
 
   let hasLogin = s.find('@')
@@ -95,65 +95,65 @@ func parseUri*(s: string): Uri =
     let login = s[0 .. hasLogin - 1]
     let hasPassword = login.find(':')
     if hasPassword != -1:
-      uri.username = login[0 .. hasPassword - 1]
-      uri.password = login[hasPassword + 1 .. ^1]
+      url.username = login[0 .. hasPassword - 1]
+      url.password = login[hasPassword + 1 .. ^1]
     else:
-      uri.username = login
+      url.username = login
     s = s[hasLogin + 1 .. ^1]
 
   let hasPath = s.find('/')
   if hasPath != -1:
-    uri.path = s[hasPath .. ^1]
+    url.path = s[hasPath .. ^1]
     s = s[0 .. hasPath - 1]
 
   let hasPort = s.find(':')
   if hasPort != -1:
-    uri.port = s[hasPort + 1 .. ^1]
+    url.port = s[hasPort + 1 .. ^1]
     s = s[0 .. hasPort - 1]
 
-  uri.hostname = s
-  return uri
+  url.hostname = s
+  return url
 
-func host*(uri: Uri): string =
-  ## Returns Host and port part of the URI as a string.
-  return uri.host & ":" & uri.port
+func host*(url: Url): string =
+  ## Returns Host and port part of the URl as a string.
+  return url.host & ":" & url.port
 
-func search*(uri: Uri): string =
-  ## Returns the search part of the URI as a string.
-  for i, pair in uri.query:
+func search*(url: Url): string =
+  ## Returns the search part of the URl as a string.
+  for i, pair in url.query:
     if i > 0:
       result.add '&'
     result.add encodeUrlComponent(pair[0])
     result.add '='
     result.add encodeUrlComponent(pair[1])
 
-func authority*(uri: Uri): string =
-  ## Returns the authority part of URI as a string.
-  if uri.username.len > 0:
-    result.add uri.username
-    if uri.password.len > 0:
+func authority*(url: Url): string =
+  ## Returns the authority part of URl as a string.
+  if url.username.len > 0:
+    result.add url.username
+    if url.password.len > 0:
       result.add ':'
-      result.add uri.password
+      result.add url.password
     result.add '@'
-  if uri.hostname.len > 0:
-    result.add uri.hostname
-  if uri.port.len > 0:
+  if url.hostname.len > 0:
+    result.add url.hostname
+  if url.port.len > 0:
     result.add ':'
-    result.add uri.port
+    result.add url.port
 
-func `$`*(uri: Uri): string =
-  ## Turns Uri into a string. Preserves query string param ordering.
-  if uri.scheme.len > 0:
-    result.add uri.scheme
+func `$`*(url: Url): string =
+  ## Turns Url into a string. Preserves query string param ordering.
+  if url.scheme.len > 0:
+    result.add url.scheme
     result.add "://"
-  result.add uri.authority
-  if uri.path.len > 0:
-    if uri.path[0] != '/':
+  result.add url.authority
+  if url.path.len > 0:
+    if url.path[0] != '/':
       result.add '/'
-    result.add uri.path
-  if uri.query.len > 0:
+    result.add url.path
+  if url.query.len > 0:
     result.add '?'
-    result.add uri.search
-  if uri.fragment.len > 0:
+    result.add url.search
+  if url.fragment.len > 0:
     result.add '#'
-    result.add uri.fragment
+    result.add url.fragment
