@@ -8,6 +8,7 @@ block:
   assert url.password == "hunter1"
   assert url.hostname == "example.com"
   assert url.port == "8042"
+  assert url.host == "example.com:8042"
   assert url.authority == "admin:hunter1@example.com:8042"
   assert url.path == "/over/there"
   assert url.search == "name=ferret"

@@ -1,6 +1,6 @@
-## Parses URls and URLs
+## Parses URLs and URLs
 ##
-##  The following are two example URls and their component parts:
+##  The following are two example URLs and their component parts:
 ##        foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose
 ##        \_/   \___/ \_____/ \_________/ \__/\_________/ \_________/ \__/
 ##         |      |       |       |        |       |          |         |
@@ -32,7 +32,7 @@ func `[]=`*(query: var seq[(string, string)], key, value: string) =
   query.add((key, value))
 
 func encodeUrlComponent*(s: string): string =
-  ## Takes a string and encodes it in the URl format.
+  ## Takes a string and encodes it in the URL format.
   result = newStringOfCap(s.len)
   for c in s:
     case c:
@@ -45,7 +45,7 @@ func encodeUrlComponent*(s: string): string =
         result.add toHex(ord(c), 2)
 
 func decodeUrlComponent*(s: string): string =
-  ## Takes a string and decodes it from the URl format.
+  ## Takes a string and decodes it from the URL format.
   result = newStringOfCap(s.len)
   var i = 0
   while i < s.len:
@@ -60,7 +60,7 @@ func decodeUrlComponent*(s: string): string =
     inc i
 
 func parseUrl*(s: string): Url =
-  ## Parses a URl or a URL into the Url object.
+  ## Parses a URL or a URL into the Url object.
   var s = s
   var url = Url()
 
@@ -115,11 +115,13 @@ func parseUrl*(s: string): Url =
   return url
 
 func host*(url: Url): string =
-  ## Returns Host and port part of the URl as a string.
-  return url.host & ":" & url.port
+  ## Returns Host and port part of the URL as a string.
+  ## Example: "example.com:8042"
+  return url.hostname & ":" & url.port
 
 func search*(url: Url): string =
-  ## Returns the search part of the URl as a string.
+  ## Returns the search part of the URL as a string.
+  ## Example: "name=ferret&age=12&legs=4"
   for i, pair in url.query:
     if i > 0:
       result.add '&'
@@ -128,7 +130,8 @@ func search*(url: Url): string =
     result.add encodeUrlComponent(pair[1])
 
 func authority*(url: Url): string =
-  ## Returns the authority part of URl as a string.
+  ## Returns the authority part of URL as a string.
+  ## Example: "admin:hunter1@example.com:8042"
   if url.username.len > 0:
     result.add url.username
     if url.password.len > 0:
