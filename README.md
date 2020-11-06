@@ -87,20 +87,20 @@ Uri = ref object
  query*: seq[(string, string)]
 ```
 
-## **proc** `[]`
+## **func** `[]`
 
 Get a key out of uri.query. Use a for loop to get multiple keys.
 
 ```nim
-proc `[]`(query: seq[(string, string)]; key: string): string
+func `[]`(query: seq[(string, string)]; key: string): string
 ```
 
-## **proc** `[]=`
+## **func** `[]=`
 
 Sets a key in the uri.query. If key is not there appends a new key-value pair at the end.
 
 ```nim
-proc `[]=`(query: var seq[(string, string)]; key, value: string)
+func `[]=`(query: var seq[(string, string)]; key, value: string)
 ```
 
 ## **func** encodeUrlComponent
@@ -119,42 +119,42 @@ Takes a string and decodes it from the URI format.
 func decodeUrlComponent(s: string): string {.raises: [ValueError].}
 ```
 
-## **proc** parseUri
+## **func** parseUri
 
 Parses a URI or a URL into the Uri object.
 
 ```nim
-proc parseUri(s: string): Uri {.raises: [ValueError].}
+func parseUri(s: string): Uri {.raises: [ValueError].}
 ```
 
-## **proc** host
+## **func** host
 
 Returns Host and port part of the URI as a string.
 
 ```nim
-proc host(uri: Uri): string
+func host(uri: Uri): string
 ```
 
-## **proc** search
+## **func** search
 
 Returns the search part of the URI as a string.
 
 ```nim
-proc search(uri: Uri): string
+func search(uri: Uri): string
 ```
 
-## **proc** authority
+## **func** authority
 
 Returns the authority part of URI as a string.
 
 ```nim
-proc authority(uri: Uri): string
+func authority(uri: Uri): string
 ```
 
-## **proc** `$`
+## **func** `$`
 
 Turns Uri into a string. Preserves query string param ordering.
 
 ```nim
-proc `$`(uri: Uri): string
+func `$`(uri: Uri): string
 ```

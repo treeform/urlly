@@ -15,14 +15,14 @@ type
     hostname*, port*, path*, fragment*: string
     query*: seq[(string, string)]
 
-proc `[]`*(query: seq[(string, string)], key: string): string =
+func `[]`*(query: seq[(string, string)], key: string): string =
   ## Get a key out of uri.query.
   ## Use a for loop to get multiple keys.
   for (k, v) in query:
     if k == key:
       return v
 
-proc `[]=`*(query: var seq[(string, string)], key, value: string) =
+func `[]=`*(query: var seq[(string, string)], key, value: string) =
   ## Sets a key in the uri.query. If key is not there appends a
   ## new key-value pair at the end.
   for pair in query.mitems:
@@ -59,7 +59,7 @@ func decodeUrlComponent*(s: string): string =
         result.add s[i]
     inc i
 
-proc parseUri*(s: string): Uri =
+func parseUri*(s: string): Uri =
   ## Parses a URI or a URL into the Uri object.
   var s = s
   var uri = Uri()
@@ -114,11 +114,11 @@ proc parseUri*(s: string): Uri =
   uri.hostname = s
   return uri
 
-proc host*(uri: Uri): string =
+func host*(uri: Uri): string =
   ## Returns Host and port part of the URI as a string.
   return uri.host & ":" & uri.port
 
-proc search*(uri: Uri): string =
+func search*(uri: Uri): string =
   ## Returns the search part of the URI as a string.
   for i, pair in uri.query:
     if i > 0:
@@ -127,7 +127,7 @@ proc search*(uri: Uri): string =
     result.add '='
     result.add encodeUrlComponent(pair[1])
 
-proc authority*(uri: Uri): string =
+func authority*(uri: Uri): string =
   ## Returns the authority part of URI as a string.
   if uri.username.len > 0:
     result.add uri.username
@@ -141,7 +141,7 @@ proc authority*(uri: Uri): string =
     result.add ':'
     result.add uri.port
 
-proc `$`*(uri: Uri): string =
+func `$`*(uri: Uri): string =
   ## Turns Uri into a string. Preserves query string param ordering.
   if uri.scheme.len > 0:
     result.add uri.scheme
