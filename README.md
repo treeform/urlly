@@ -77,10 +77,10 @@ You can also modify the query string with `[]=` method:
 url.query["missing"] = "no more!"
 ```
 
-# API: urliy
+# API: urlly
 
 ```nim
-import urliy
+import urlly
 ```
 
 ## **type** Url
@@ -111,7 +111,7 @@ func `[]=`(query: var seq[(string, string)]; key, value: string)
 
 ## **func** encodeUrlComponent
 
-Takes a string and encodes it in the URl format.
+Takes a string and encodes it in the URL format.
 
 ```nim
 func encodeUrlComponent(s: string): string
@@ -119,7 +119,7 @@ func encodeUrlComponent(s: string): string
 
 ## **func** decodeUrlComponent
 
-Takes a string and decodes it from the URl format.
+Takes a string and decodes it from the URL format.
 
 ```nim
 func decodeUrlComponent(s: string): string {.raises: [ValueError].}
@@ -127,7 +127,7 @@ func decodeUrlComponent(s: string): string {.raises: [ValueError].}
 
 ## **func** parseUrl
 
-Parses a URl or a URL into the Url object.
+Parses a URL or a URL into the Url object.
 
 ```nim
 func parseUrl(s: string): Url {.raises: [ValueError].}
@@ -135,7 +135,7 @@ func parseUrl(s: string): Url {.raises: [ValueError].}
 
 ## **func** host
 
-Returns Host and port part of the URl as a string.
+Returns hostname and port part of the URL as a string. Example: "example.com:8042"
 
 ```nim
 func host(url: Url): string
@@ -143,7 +143,7 @@ func host(url: Url): string
 
 ## **func** search
 
-Returns the search part of the URl as a string.
+Returns the search part of the URL as a string. Example: "name=ferret&amp;age=12&amp;legs=4"
 
 ```nim
 func search(url: Url): string
@@ -151,7 +151,7 @@ func search(url: Url): string
 
 ## **func** authority
 
-Returns the authority part of URl as a string.
+Returns the authority part of URL as a string. Example: "admin:hunter1@example.com:8042"
 
 ```nim
 func authority(url: Url): string

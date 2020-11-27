@@ -115,7 +115,7 @@ func parseUrl*(s: string): Url =
   return url
 
 func host*(url: Url): string =
-  ## Returns Host and port part of the URL as a string.
+  ## Returns hostname and port part of the URL as a string.
   ## Example: "example.com:8042"
   return url.hostname & ":" & url.port
 
