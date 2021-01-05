@@ -66,7 +66,7 @@ func parseUrl*(s: string): Url =
 
   let hasFragment = s.rfind('#')
   if hasFragment != -1:
-    url.fragment = s[hasFragment + 1 .. ^1]
+    url.fragment = decodeUrlComponent(s[hasFragment + 1 .. ^1])
     s = s[0 .. hasFragment - 1]
 
   let hasSearch = s.rfind('?')
@@ -103,7 +103,7 @@ func parseUrl*(s: string): Url =
 
   let hasPath = s.find('/')
   if hasPath != -1:
-    url.path = s[hasPath .. ^1]
+    url.path = decodeUrlComponent(s[hasPath .. ^1])
     s = s[0 .. hasPath - 1]
 
   let hasPort = s.find(':')

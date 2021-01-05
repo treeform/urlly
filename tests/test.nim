@@ -79,3 +79,14 @@ block:
   url.query["specials"] = "\n\t\b\r\"+&="
   assert $url == "example.com?site=https%3A%2F%2Fnim-lang.org&https%3A%2F%2Fnim-lang.org=nice%21%21%21&nothing=&unicode=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&specials=%0A%09%08%0D%22%2B%26%3D"
   assert $parseUrl($url) == $url
+
+block:
+  let test = "http://localhost:8080/p2/foo%20and%20other%20stuff"
+  let url = parseUrl(test)
+  assert url.path == "/p2/foo and other stuff"
+
+block:
+  let test = "http://localhost:8080/p2/#foo%20and%20other%20stuff"
+  let url = parseUrl(test)
+  assert url.path == "/p2/"
+  assert url.fragment == "foo and other stuff"
