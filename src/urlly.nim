@@ -1,10 +1,11 @@
 ## Parses URLs and URLs
 ##
 ##  The following are two example URLs and their component parts::
-##        foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose
+##
+##       https://admin:hunter1@example.com:8042/over/there?name=ferret#nose
 ##        \_/   \___/ \_____/ \_________/ \__/\_________/ \_________/ \__/
 ##         |      |       |       |        |       |          |         |
-##      scheme username password hostname port   path[s]    query fragment
+##       scheme username password hostname port   path[s]    query fragment
 ##
 
 import strutils
