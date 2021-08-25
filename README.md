@@ -60,7 +60,7 @@ The `Url.query` is just a sequence of key value pairs (`seq[(string, string)]`).
 let url = parseUrl("?name=ferret&age=12&leg=1&leg=2&leg=3&leg=4")
 
 for (k, v) in url.query:
-if k == "leg":
+  if k == "leg":
     echo v
 ```
 
