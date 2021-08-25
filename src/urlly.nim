@@ -1,10 +1,10 @@
 ## Parses URLs and URLs
 ##
-##  The following are two example URLs and their component parts:
+##  The following are two example URLs and their component parts::
 ##        foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose
 ##        \_/   \___/ \_____/ \_________/ \__/\_________/ \_________/ \__/
 ##         |      |       |       |        |       |          |         |
-##      scheme username password hostname port   path       query fragment
+##      scheme username password hostname port   path[s]    query fragment
 ##
 
 import strutils
@@ -12,7 +12,8 @@ import strutils
 type
   Url* = ref object
     scheme*, username*, password*: string
-    hostname*, port*, path*, fragment*: string
+    hostname*, port*, fragment*: string
+    paths*: seq[string]
     query*: seq[(string, string)]
 
 func `[]`*(query: seq[(string, string)], key: string): string =
@@ -103,7 +104,8 @@ func parseUrl*(s: string): Url =
 
   let hasPath = s.find('/')
   if hasPath != -1:
-    url.path = decodeUrlComponent(s[hasPath .. ^1])
+    for part in s[hasPath + 1 .. ^1].split('/'):
+      url.paths.add(decodeUrlComponent(part))
     s = s[0 .. hasPath - 1]
 
   let hasPort = s.find(':')
@@ -129,6 +131,14 @@ func search*(url: Url): string =
     result.add '='
     result.add encodeUrlComponent(pair[1])
 
+func path*(url: Url): string =
+  ## Returns paths combine into single path.
+  ## @["foo", "bar"] -> "/foo/bar"
+  if url.paths.len > 0:
+    for part in url.paths:
+      result.add '/'
+      result.add encodeUrlComponent(part)
+
 func authority*(url: Url): string =
   ## Returns the authority part of URL as a string.
   ## Example: "admin:hunter1@example.com:8042"
@@ -150,13 +160,10 @@ func `$`*(url: Url): string =
     result.add url.scheme
     result.add "://"
   result.add url.authority
-  if url.path.len > 0:
-    if url.path[0] != '/':
-      result.add '/'
-    result.add url.path
+  result.add url.path
   if url.query.len > 0:
     result.add '?'
     result.add url.search
   if url.fragment.len > 0:
     result.add '#'
-    result.add url.fragment
+    result.add encodeUrlComponent(url.fragment)

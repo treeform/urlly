@@ -10,7 +10,7 @@ block:
   assert url.port == "8042"
   assert url.host == "example.com:8042"
   assert url.authority == "admin:hunter1@example.com:8042"
-  assert url.path == "/over/there"
+  assert url.paths == @["over", "there"]
   assert url.search == "name=ferret"
   assert url.query["name"] == "ferret"
   assert url.fragment == "nose"
@@ -25,7 +25,7 @@ block:
   assert url.hostname == ""
   assert url.port == ""
   assert url.authority == ""
-  assert url.path == "/over/there"
+  assert url.paths == @["over", "there"]
   assert url.search == "name=ferret"
   assert url.query["name"] == "ferret"
   assert url.fragment == ""
@@ -39,7 +39,7 @@ block:
   assert url.password == ""
   assert url.hostname == ""
   assert url.port == ""
-  assert url.path == ""
+  assert url.paths == @[]
   assert url.authority == ""
   assert url.search == "name=ferret&age=12&leg=1&leg=2&leg=3&leg=4"
   assert url.query["name"] == "ferret"
@@ -81,12 +81,21 @@ block:
   assert $parseUrl($url) == $url
 
 block:
-  let test = "http://localhost:8080/p2/foo%20and%20other%20stuff"
+  let test = "http://localhost:8080/p2/foo+and+other+stuff"
   let url = parseUrl(test)
-  assert url.path == "/p2/foo and other stuff"
+  assert url.paths == @["p2", "foo and other stuff"]
+  assert $url == "http://localhost:8080/p2/foo+and+other+stuff"
 
 block:
-  let test = "http://localhost:8080/p2/#foo%20and%20other%20stuff"
+  let test = "http://localhost:8080/p2/foo%2Fand%2Fother%2Fstuff"
   let url = parseUrl(test)
-  assert url.path == "/p2/"
+  assert url.paths == @["p2", "foo/and/other/stuff"]
+  assert $url == "http://localhost:8080/p2/foo%2Fand%2Fother%2Fstuff"
+
+
+block:
+  let test = "http://localhost:8080/p2/#foo+and+other+stuff"
+  let url = parseUrl(test)
+  assert url.paths == @["p2", ""]
   assert url.fragment == "foo and other stuff"
+  assert $url == "http://localhost:8080/p2/#foo+and+other+stuff"
