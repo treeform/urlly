@@ -1,6 +1,12 @@
 # Urlly (Pronounced "you-really?")
 
+`nimble install urlly`
+
 ![Github Actions](https://github.com/treeform/urlly/workflows/Github%20Actions/badge.svg)
+
+[API reference](https://nimdocs.com/treeform/urlly)
+
+This library has no dependencies other than the Nim standard libarary.
 
 URL and URI parsing for Nim for C/JS backends. Similar api to browsers's `window.location`.
 
@@ -14,14 +20,6 @@ scheme username password hostname port   path       query fragment
 ```
 
 This library is being actively developed and we'd be happy for you to use it.
-
-`nimble install urlly`
-
-![Github Actions](https://github.com/treeform/urlly/workflows/Github%20Actions/badge.svg)
-
-### Documentation
-
-API reference: https://nimdocs.com/treeform/urlly
 
 ## Using the `parseUrl()`.
 
