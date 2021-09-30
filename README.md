@@ -8,6 +8,8 @@
 
 This library has no dependencies other than the Nim standard libarary.
 
+## About
+
 URL and URI parsing for Nim for C/JS backends. Similar api to browsers's `window.location`.
 
 Nim's standard library `uri` module does not parse the query string. And Nim's standard library `cgi` module does not work in `js` mode. This module works everywhere and parses everything! Including providing an easy way to work with the query key-value pairs.
