@@ -105,3 +105,9 @@ block:
   assert url.paths == @["p2", ""]
   assert url.fragment == "foo and other stuff"
   assert $url == "http://localhost:8080/p2/#foo+and+other+stuff"
+
+block:
+  let test = "name=&age&legs=4"
+  let url = parseUrl(test)
+  echo url.hostname
+  assert url.query == @[("name", ""), ("age", ""), ("legs", "4")]

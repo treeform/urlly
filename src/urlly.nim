@@ -68,6 +68,20 @@ func decodeUrlComponent*(s: string): string =
         result.add s[i]
     inc i
 
+func parseSearch*(search: string): seq[(string, string)] =
+  ## Parses the search part into strings pairs
+  ## "name=&age&legs=4" -> @[("name", ""), ("age", ""), ("legs", "4")]
+  for pairStr in search.split('&'):
+    let pair = pairStr.split('=', 1)
+    let kv =
+      if pair.len == 2:
+        (decodeUrlComponent(pair[0]), decodeUrlComponent(pair[1]))
+      elif pair.len == 1:
+        (decodeUrlComponent(pair[0]), "")
+      else:
+        ("", "")
+    result.add(kv)
+
 func parseUrl*(s: string): Url =
   ## Parses a URL or a URL into the Url object.
   var s = s
@@ -82,17 +96,7 @@ func parseUrl*(s: string): Url =
   if hasSearch != -1:
     let search = s[hasSearch + 1 .. ^1]
     s = s[0 .. hasSearch - 1]
-
-    for pairStr in search.split('&'):
-      let pair = pairStr.split('=', 1)
-      let kv =
-        if pair.len == 2:
-          (decodeUrlComponent(pair[0]), decodeUrlComponent(pair[1]))
-        elif pair.len == 1:
-          (decodeUrlComponent(pair[0]), "")
-        else:
-          ("", "")
-      url.query.add(kv)
+    url.query = parseSearch(search)
 
   let hasScheme = s.find("://")
   if hasScheme != -1:
@@ -120,6 +124,11 @@ func parseUrl*(s: string): Url =
   if hasPort != -1:
     url.port = s[hasPort + 1 .. ^1]
     s = s[0 .. hasPort - 1]
+
+  if hasSearch == -1 and ("&" in s) or ("=" in s):
+    # Probably search without ?
+    url.query = parseSearch(s)
+    s = ""
 
   url.hostname = s
   return url
