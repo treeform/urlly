@@ -13,6 +13,8 @@ block:
   assert url.paths == @["over", "there"]
   assert url.search == "name=ferret"
   assert url.query["name"] == "ferret"
+  assert "name" in url.query
+  assert "nothing" notin url.query
   assert url.fragment == "nose"
   assert $url == test
 
@@ -45,6 +47,10 @@ block:
   assert url.query["name"] == "ferret"
   assert url.query["age"] == "12"
   assert url.query["leg"] == "1"
+  assert "name" in url.query
+  assert "age" in url.query
+  assert "leg" in url.query
+  assert "eye" notin url.query
   assert $url.query == """@[("name", "ferret"), ("age", "12"), ("leg", "1"), ("leg", "2"), ("leg", "3"), ("leg", "4")]"""
   assert url.fragment == ""
   assert $url == test

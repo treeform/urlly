@@ -33,6 +33,13 @@ func `[]=`*(query: var seq[(string, string)], key, value: string) =
       return
   query.add((key, value))
 
+func contains*(query: var seq[(string, string)], key: string): bool =
+  ## Returns true if key is in the url.query.
+  ## `"name" in url.query` or `"name" notin url.query`
+  for pair in query.mitems:
+    if pair[0] == key:
+      return true
+
 func encodeUrlComponent*(s: string): string =
   ## Takes a string and encodes it in the URL format.
   result = newStringOfCap(s.len)
