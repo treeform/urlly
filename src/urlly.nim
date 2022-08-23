@@ -40,8 +40,8 @@ func contains*(query: var seq[(string, string)], key: string): bool =
     if pair[0] == key:
       return true
 
-func encodeUrlComponent*(s: string): string =
-  ## Takes a string and encodes it in the URL format.
+func encodeQueryComponent*(s: string): string =
+  ## Takes a string and encodes it in the x-www-form-urlencoded format.
   result = newStringOfCap(s.len)
   for c in s:
     case c:
@@ -53,8 +53,8 @@ func encodeUrlComponent*(s: string): string =
         result.add '%'
         result.add toHex(ord(c), 2)
 
-func decodeUrlComponent*(s: string): string =
-  ## Takes a string and decodes it from the URL format.
+func decodeQueryComponent*(s: string): string =
+  ## Takes a string and decodes it from the x-www-form-urlencoded format.
   result = newStringOfCap(s.len)
   var i = 0
   while i < s.len:
@@ -68,6 +68,29 @@ func decodeUrlComponent*(s: string): string =
         result.add s[i]
     inc i
 
+func encodeUrlComponent*(s: string): string =
+  ## Takes a string and encodes it in the URL format.
+  result = newStringOfCap(s.len)
+  for c in s:
+    case c:
+      of 'a'..'z', 'A'..'Z', '0'..'9', '-', '.', '_', '~', '+':
+        result.add(c)
+      else:
+        result.add '%'
+        result.add toHex(ord(c), 2)
+
+func decodeUrlComponent*(s: string): string =
+  ## Takes a string and decodes it from the URL format.
+  result = newStringOfCap(s.len)
+  var i = 0
+  while i < s.len:
+    if s[i] == '%':
+      result.add chr(fromHex[uint8](s[i+1 .. i+2]))
+      i += 2
+    else:
+      result.add s[i]
+    inc i
+
 func parseSearch*(search: string): seq[(string, string)] =
   ## Parses the search part into strings pairs
   ## "name=&age&legs=4" -> @[("name", ""), ("age", ""), ("legs", "4")]
@@ -75,9 +98,9 @@ func parseSearch*(search: string): seq[(string, string)] =
     let pair = pairStr.split('=', 1)
     let kv =
       if pair.len == 2:
-        (decodeUrlComponent(pair[0]), decodeUrlComponent(pair[1]))
+        (decodeQueryComponent(pair[0]), decodeQueryComponent(pair[1]))
       elif pair.len == 1:
-        (decodeUrlComponent(pair[0]), "")
+        (decodeQueryComponent(pair[0]), "")
       else:
         ("", "")
     result.add(kv)
@@ -144,9 +167,9 @@ func search*(url: Url): string =
   for i, pair in url.query:
     if i > 0:
       result.add '&'
-    result.add encodeUrlComponent(pair[0])
+    result.add encodeQueryComponent(pair[0])
     result.add '='
-    result.add encodeUrlComponent(pair[1])
+    result.add encodeQueryComponent(pair[1])
 
 func path*(url: Url): string =
   ## Returns paths combine into single path.
