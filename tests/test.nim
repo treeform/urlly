@@ -89,7 +89,7 @@ block:
 block:
   let test = "http://localhost:8080/p2/foo+and+other+stuff"
   let url = parseUrl(test)
-  assert url.paths == @["p2", "foo and other stuff"]
+  assert url.paths == @["p2", "foo+and+other+stuff"]
   assert $url == "http://localhost:8080/p2/foo+and+other+stuff"
 
 block:
@@ -103,7 +103,7 @@ block:
   let test = "http://localhost:8080/p2/#foo+and+other+stuff"
   let url = parseUrl(test)
   assert url.paths == @["p2", ""]
-  assert url.fragment == "foo and other stuff"
+  assert url.fragment == "foo+and+other+stuff"
   assert $url == "http://localhost:8080/p2/#foo+and+other+stuff"
 
 block:
