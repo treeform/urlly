@@ -1,4 +1,4 @@
-version     = "1.0.0"
+version     = "1.0.1"
 author      = "Andre von Houck"
 description = "URI and URL parsing for Nim for C/JS backends. Similar api to browsers's `window.location`."
 license     = "MIT"
