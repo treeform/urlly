@@ -19,14 +19,14 @@ type
 
   QueryParams* = seq[(string, string)]
 
-func `[]`*(query: QueryParams, key: string): string =
+proc `[]`*(query: QueryParams, key: string): string =
   ## Get a key out of url.query. Returns an empty string if key is not present.
   ## Use a for loop to get multiple keys.
   for (k, v) in query:
     if k == key:
       return v
 
-func `[]=`*(query: var QueryParams, key, value: string) =
+proc `[]=`*(query: var QueryParams, key, value: string) =
   ## Sets the value for the key in url.query. If the key is present, this
   ## appends a new key-value pair to the end.
   for pair in query.mitems:
@@ -35,14 +35,14 @@ func `[]=`*(query: var QueryParams, key, value: string) =
       return
   query.add((key, value))
 
-func contains*(query: QueryParams, key: string): bool =
+proc contains*(query: QueryParams, key: string): bool =
   ## Returns true if key is in the url.query.
   ## `"name" in url.query` or `"name" notin url.query`
   for pair in query:
     if pair[0] == key:
       return true
 
-func encodeQueryComponent*(s: string): string =
+proc encodeQueryComponent*(s: string): string =
   ## Takes a string and encodes it in the x-www-form-urlencoded format.
   result = newStringOfCap(s.len)
   for c in s:
@@ -55,7 +55,7 @@ func encodeQueryComponent*(s: string): string =
         result.add '%'
         result.add toHex(ord(c), 2)
 
-func decodeQueryComponent*(s: string): string =
+proc decodeQueryComponent*(s: string): string =
   ## Takes a string and decodes it from the x-www-form-urlencoded format.
   result = newStringOfCap(s.len)
   var i = 0
@@ -70,7 +70,7 @@ func decodeQueryComponent*(s: string): string =
         result.add s[i]
     inc i
 
-func encodeUrlComponent*(s: string): string =
+proc encodeUrlComponent*(s: string): string =
   ## Takes a string and encodes it in the URL format.
   result = newStringOfCap(s.len)
   for c in s:
@@ -81,7 +81,7 @@ func encodeUrlComponent*(s: string): string =
         result.add '%'
         result.add toHex(ord(c), 2)
 
-func decodeUrlComponent*(s: string): string =
+proc decodeUrlComponent*(s: string): string =
   ## Takes a string and decodes it from the URL format.
   result = newStringOfCap(s.len)
   var i = 0
@@ -93,7 +93,7 @@ func decodeUrlComponent*(s: string): string =
       result.add s[i]
     inc i
 
-func parseSearch*(search: string): QueryParams =
+proc parseSearch*(search: string): QueryParams =
   ## Parses the search part into strings pairs
   ## "name=&age&legs=4" -> @[("name", ""), ("age", ""), ("legs", "4")]
   for pairStr in search.split('&'):
@@ -107,7 +107,7 @@ func parseSearch*(search: string): QueryParams =
         ("", "")
     result.add(kv)
 
-func parseUrl*(s: string): Url =
+proc parseUrl*(s: string): Url =
   ## Parses a URL or a URL into the Url object.
   var s = s
   var url = Url()
@@ -158,12 +158,12 @@ func parseUrl*(s: string): Url =
   url.hostname = s
   return url
 
-func host*(url: Url): string =
+proc host*(url: Url): string =
   ## Returns the hostname and port part of the URL as a string.
   ## Example: "example.com:8042"
   url.hostname & ":" & url.port
 
-func search*(url: Url): string =
+proc search*(url: Url): string =
   ## Returns the search part of the URL as a string.
   ## Example: "name=ferret&age=12&legs=4"
   for i, pair in url.query:
@@ -173,7 +173,7 @@ func search*(url: Url): string =
     result.add '='
     result.add encodeQueryComponent(pair[1])
 
-func path*(url: Url): string =
+proc path*(url: Url): string =
   ## Returns the paths combined into a single path string.
   ## @["foo", "bar"] -> "/foo/bar"
   if url.paths.len > 0:
@@ -181,7 +181,7 @@ func path*(url: Url): string =
       result.add '/'
       result.add encodeUrlComponent(part)
 
-func authority*(url: Url): string =
+proc authority*(url: Url): string =
   ## Returns the authority part of URL as a string.
   ## Example: "admin:hunter1@example.com:8042"
   if url.username.len > 0:
@@ -196,7 +196,7 @@ func authority*(url: Url): string =
     result.add ':'
     result.add url.port
 
-func `$`*(url: Url): string =
+proc `$`*(url: Url): string =
   ## Turns Url into a string. Preserves query string param ordering.
   if url.scheme.len > 0:
     result.add url.scheme
