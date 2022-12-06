@@ -43,7 +43,9 @@ proc contains*(query: QueryParams, key: string): bool =
       return true
 
 proc encodeQueryComponent*(s: string): string =
-  ## Takes a string and encodes it in the x-www-form-urlencoded format.
+  ## Similar to encodeURIComponent, however query parameter spaces should
+  ## be +, not %20 like encodeURIComponent would encode them.
+  ## The encoded string is in the x-www-form-urlencoded format.
   result = newStringOfCap(s.len)
   for c in s:
     case c:
@@ -70,19 +72,23 @@ proc decodeQueryComponent*(s: string): string =
         result.add s[i]
     inc i
 
-proc encodeUrlComponent*(s: string): string =
-  ## Takes a string and encodes it in the URL format.
+proc encodeURIComponent*(s: string): string =
+  ## Encodes the string the same as encodeURIComponent does in the browser.
   result = newStringOfCap(s.len)
   for c in s:
     case c:
-      of 'a'..'z', 'A'..'Z', '0'..'9', '-', '.', '_', '~', '+':
+      of 'a'..'z', 'A'..'Z', '0'..'9', '-', '.', '_', '~':
         result.add(c)
       else:
         result.add '%'
         result.add toHex(ord(c), 2)
 
-proc decodeUrlComponent*(s: string): string =
-  ## Takes a string and decodes it from the URL format.
+proc encodeUrlComponent*(s: string): string =
+  ## Encodes the string the same as encodeURIComponent does in the browser.
+  encodeURIComponent(s)
+
+proc decodeURIComponent*(s: string): string =
+  ## Encodes the string the same as decodeURIComponent does in the browser.
   result = newStringOfCap(s.len)
   var i = 0
   while i < s.len:
@@ -93,28 +99,32 @@ proc decodeUrlComponent*(s: string): string =
       result.add s[i]
     inc i
 
+proc decodeUrlComponent*(s: string): string =
+  ## Encodes the string the same as decodeURIComponent does in the browser.
+  decodeURIComponent(s)
+
 proc parseSearch*(search: string): QueryParams =
   ## Parses the search part into strings pairs
   ## "name=&age&legs=4" -> @[("name", ""), ("age", ""), ("legs", "4")]
   for pairStr in search.split('&'):
-    let pair = pairStr.split('=', 1)
-    let kv =
-      if pair.len == 2:
-        (decodeQueryComponent(pair[0]), decodeQueryComponent(pair[1]))
-      elif pair.len == 1:
-        (decodeQueryComponent(pair[0]), "")
-      else:
-        ("", "")
+    let
+      pair = pairStr.split('=', 1)
+      kv =
+        if pair.len == 2:
+          (decodeQueryComponent(pair[0]), decodeQueryComponent(pair[1]))
+        else:
+          (decodeQueryComponent(pair[0]), "")
     result.add(kv)
 
 proc parseUrl*(s: string): Url =
   ## Parses a URL or a URL into the Url object.
-  var s = s
-  var url = Url()
+  var
+    s = s
+    url = Url()
 
   let hasFragment = s.rfind('#')
   if hasFragment != -1:
-    url.fragment = decodeUrlComponent(s[hasFragment + 1 .. ^1])
+    url.fragment = decodeURIComponent(s[hasFragment + 1 .. ^1])
     s = s[0 .. hasFragment - 1]
 
   let hasSearch = s.rfind('?')
@@ -122,6 +132,13 @@ proc parseUrl*(s: string): Url =
     let search = s[hasSearch + 1 .. ^1]
     s = s[0 .. hasSearch - 1]
     url.query = parseSearch(search)
+  else:
+    # Handle ? being ommitted but a search still being present
+    let hasAmpersand = s.find('&')
+    if hasAmpersand != -1:
+      let search = s[hasAmpersand + 1 .. ^1]
+      s = s[0 .. hasAmpersand - 1]
+      url.query = parseSearch(search)
 
   let hasScheme = s.find("://")
   if hasScheme != -1:
@@ -142,7 +159,7 @@ proc parseUrl*(s: string): Url =
   let hasPath = s.find('/')
   if hasPath != -1:
     for part in s[hasPath + 1 .. ^1].split('/'):
-      url.paths.add(decodeUrlComponent(part))
+      url.paths.add(decodeURIComponent(part))
     s = s[0 .. hasPath - 1]
 
   let hasPort = s.find(':')
@@ -151,8 +168,10 @@ proc parseUrl*(s: string): Url =
     s = s[0 .. hasPort - 1]
 
   if hasSearch == -1 and ("&" in s) or ("=" in s):
-    # Probably search without ?
+    # Probably search without ?, append to query
+    let prev = url.query # In case we already got from handling ommitted ?
     url.query = parseSearch(s)
+    url.query.add(prev)
     s = ""
 
   url.hostname = s
@@ -179,7 +198,7 @@ proc path*(url: Url): string =
   if url.paths.len > 0:
     for part in url.paths:
       result.add '/'
-      result.add encodeUrlComponent(part)
+      result.add encodeURIComponent(part)
 
 proc authority*(url: Url): string =
   ## Returns the authority part of URL as a string.
@@ -208,4 +227,4 @@ proc `$`*(url: Url): string =
     result.add url.search
   if url.fragment.len > 0:
     result.add '#'
-    result.add encodeUrlComponent(url.fragment)
+    result.add encodeURIComponent(url.fragment)

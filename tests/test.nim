@@ -1,4 +1,4 @@
-import urlly, strutils
+import urlly
 
 block:
   let test = "foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose"
@@ -87,10 +87,10 @@ block:
   assert $parseUrl($url) == $url
 
 block:
-  let test = "http://localhost:8080/p2/foo+and+other+stuff"
+  let test = "http://localhost:8080/p2/foo%2Band%2Bother%2Bstuff"
   let url = parseUrl(test)
   assert url.paths == @["p2", "foo+and+other+stuff"]
-  assert $url == "http://localhost:8080/p2/foo+and+other+stuff"
+  assert $url == "http://localhost:8080/p2/foo%2Band%2Bother%2Bstuff"
 
 block:
   let test = "http://localhost:8080/p2/foo%2Fand%2Fother%2Fstuff"
@@ -98,16 +98,36 @@ block:
   assert url.paths == @["p2", "foo/and/other/stuff"]
   assert $url == "http://localhost:8080/p2/foo%2Fand%2Fother%2Fstuff"
 
-
 block:
-  let test = "http://localhost:8080/p2/#foo+and+other+stuff"
+  let test = "http://localhost:8080/p2/#foo%2Band%2Bother%2Bstuff"
   let url = parseUrl(test)
   assert url.paths == @["p2", ""]
   assert url.fragment == "foo+and+other+stuff"
-  assert $url == "http://localhost:8080/p2/#foo+and+other+stuff"
+  assert $url == "http://localhost:8080/p2/#foo%2Band%2Bother%2Bstuff"
 
 block:
   let test = "name=&age&legs=4"
   let url = parseUrl(test)
-  echo url.hostname
   assert url.query == @[("name", ""), ("age", ""), ("legs", "4")]
+
+block:
+  let test = "name=&age&legs=4&&&"
+  let url = parseUrl(test)
+  assert url.query ==
+    @[("name", ""), ("age", ""), ("legs", "4"), ("", ""), ("", ""), ("", "")]
+
+block:
+  let test = "https://localhost:8080"
+  let url = parseUrl(test)
+  assert url.paths == @[]
+
+block:
+  let test = "https://localhost:8080/"
+  let url = parseUrl(test)
+  assert url.paths == @[""]
+
+block:
+  let test = "https://localhost:8080/&url=1"
+  let url = parseUrl(test)
+  assert url.paths == @[""]
+  assert url.query == @[("url", "1")]
