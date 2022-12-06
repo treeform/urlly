@@ -8,7 +8,7 @@
 ##       scheme username password hostname port   path[s]    query fragment
 ##
 
-import strutils
+import std/strutils
 
 type
   Url* = ref object
