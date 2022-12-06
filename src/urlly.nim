@@ -15,28 +15,30 @@ type
     scheme*, username*, password*: string
     hostname*, port*, fragment*: string
     paths*: seq[string]
-    query*: seq[(string, string)]
+    query*: QueryParams
 
-func `[]`*(query: seq[(string, string)], key: string): string =
-  ## Get a key out of url.query.
+  QueryParams* = seq[(string, string)]
+
+func `[]`*(query: QueryParams, key: string): string =
+  ## Get a key out of url.query. Returns an empty string if key is not present.
   ## Use a for loop to get multiple keys.
   for (k, v) in query:
     if k == key:
       return v
 
-func `[]=`*(query: var seq[(string, string)], key, value: string) =
-  ## Sets a key in the url.query. If key is not there appends a
-  ## new key-value pair at the end.
+func `[]=`*(query: var QueryParams, key, value: string) =
+  ## Sets the value for the key in url.query. If the key is present, this
+  ## appends a new key-value pair to the end.
   for pair in query.mitems:
     if pair[0] == key:
       pair[1] = value
       return
   query.add((key, value))
 
-func contains*(query: var seq[(string, string)], key: string): bool =
+func contains*(query: QueryParams, key: string): bool =
   ## Returns true if key is in the url.query.
   ## `"name" in url.query` or `"name" notin url.query`
-  for pair in query.mitems:
+  for pair in query:
     if pair[0] == key:
       return true
 
@@ -91,7 +93,7 @@ func decodeUrlComponent*(s: string): string =
       result.add s[i]
     inc i
 
-func parseSearch*(search: string): seq[(string, string)] =
+func parseSearch*(search: string): QueryParams =
   ## Parses the search part into strings pairs
   ## "name=&age&legs=4" -> @[("name", ""), ("age", ""), ("legs", "4")]
   for pairStr in search.split('&'):
@@ -157,9 +159,9 @@ func parseUrl*(s: string): Url =
   return url
 
 func host*(url: Url): string =
-  ## Returns hostname and port part of the URL as a string.
+  ## Returns the hostname and port part of the URL as a string.
   ## Example: "example.com:8042"
-  return url.hostname & ":" & url.port
+  url.hostname & ":" & url.port
 
 func search*(url: Url): string =
   ## Returns the search part of the URL as a string.
@@ -172,7 +174,7 @@ func search*(url: Url): string =
     result.add encodeQueryComponent(pair[1])
 
 func path*(url: Url): string =
-  ## Returns paths combine into single path.
+  ## Returns the paths combined into a single path string.
   ## @["foo", "bar"] -> "/foo/bar"
   if url.paths.len > 0:
     for part in url.paths:
