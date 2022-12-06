@@ -1,4 +1,4 @@
-## Parses URLs and URLs
+## Parses URIs and URLs
 ##
 ##  The following are two example URLs and their component parts::
 ##
