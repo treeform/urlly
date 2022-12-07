@@ -87,6 +87,12 @@ block:
   doAssert $parseUrl($url) == $url
 
 block:
+  let test = "http://localhost:8080/p2/foo+and+other+stuff"
+  let url = parseUrl(test)
+  doAssert url.paths == @["p2", "foo+and+other+stuff"]
+  doAssert $url == "http://localhost:8080/p2/foo%2Band%2Bother%2Bstuff"
+
+block:
   let test = "http://localhost:8080/p2/foo%2Band%2Bother%2Bstuff"
   let url = parseUrl(test)
   doAssert url.paths == @["p2", "foo+and+other+stuff"]
@@ -128,6 +134,12 @@ block:
 
 block:
   let test = "https://localhost:8080/&url=1"
+  let url = parseUrl(test)
+  doAssert url.paths == @[""]
+  doAssert url.query == @[("url", "1")]
+
+block:
+  let test = "https://localhost:8080/?url=1"
   let url = parseUrl(test)
   doAssert url.paths == @[""]
   doAssert url.query == @[("url", "1")]
