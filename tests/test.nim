@@ -51,7 +51,7 @@ block:
   doAssert "age" in url.query
   doAssert "leg" in url.query
   doAssert "eye" notin url.query
-  doAssert $url.query == """@[("name", "ferret"), ("age", "12"), ("leg", "1"), ("leg", "2"), ("leg", "3"), ("leg", "4")]"""
+  doAssert url.search == "name=ferret&age=12&leg=1&leg=2&leg=3&leg=4"
   doAssert url.fragment == ""
   doAssert $url == test
 

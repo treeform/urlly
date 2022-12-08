@@ -8,7 +8,7 @@
 ##       scheme username password hostname port   path[s]    query fragment
 ##
 
-import std/strutils
+import std/strutils, std/typetraits
 
 type
   Url* = ref object
@@ -17,30 +17,13 @@ type
     paths*: seq[string]
     query*: QueryParams
 
-  QueryParams* = seq[(string, string)]
+  QueryParams* = distinct seq[(string, string)]
 
-proc `[]`*(query: QueryParams, key: string): string =
-  ## Get a key out of url.query. Returns an empty string if key is not present.
-  ## Use a for loop to get multiple keys.
-  for (k, v) in query:
-    if k == key:
-      return v
+converter toBase*(params: var QueryParams): var seq[(string, string)] =
+  params.distinctBase
 
-proc `[]=`*(query: var QueryParams, key, value: string) =
-  ## Sets the value for the key in url.query. If the key is present, this
-  ## appends a new key-value pair to the end.
-  for pair in query.mitems:
-    if pair[0] == key:
-      pair[1] = value
-      return
-  query.add((key, value))
-
-proc contains*(query: QueryParams, key: string): bool =
-  ## Returns true if key is in the url.query.
-  ## `"name" in url.query` or `"name" notin url.query`
-  for pair in query:
-    if pair[0] == key:
-      return true
+converter toBase*(params: QueryParams): seq[(string, string)] =
+  params.distinctBase
 
 proc encodeQueryComponent*(s: string): string =
   ## Similar to encodeURIComponent, however query parameter spaces should
@@ -102,6 +85,41 @@ proc decodeURIComponent*(s: string): string =
 proc decodeUrlComponent*(s: string): string =
   ## Encodes the string the same as decodeURIComponent does in the browser.
   decodeURIComponent(s)
+
+proc `[]`*(query: QueryParams, key: string): string =
+  ## Get a key out of url.query. Returns an empty string if key is not present.
+  ## Use a for loop to get multiple keys.
+  for (k, v) in query.toBase:
+    if k == key:
+      return v
+
+proc `[]=`*(query: var QueryParams, key, value: string) =
+  ## Sets the value for the key in url.query. If the key is present, this
+  ## appends a new key-value pair to the end.
+  for pair in query.mitems:
+    if pair[0] == key:
+      pair[1] = value
+      return
+  query.add((key, value))
+
+proc contains*(query: QueryParams, key: string): bool =
+  ## Returns true if key is in the url.query.
+  ## `"name" in url.query` or `"name" notin url.query`
+  for pair in query:
+    if pair[0] == key:
+      return true
+
+proc add*(query: var QueryParams, params: QueryParams) =
+  for (k, v) in params:
+    query.add((k, v))
+
+proc `$`*(query: QueryParams): string =
+  for i, pair in query:
+    if i > 0:
+      result.add '&'
+    result.add encodeQueryComponent(pair[0])
+    result.add '='
+    result.add encodeQueryComponent(pair[1])
 
 proc parseSearch*(search: string): QueryParams =
   ## Parses the search part into strings pairs
@@ -185,12 +203,7 @@ proc host*(url: Url): string =
 proc search*(url: Url): string =
   ## Returns the search part of the URL as a string.
   ## Example: "name=ferret&age=12&legs=4"
-  for i, pair in url.query:
-    if i > 0:
-      result.add '&'
-    result.add encodeQueryComponent(pair[0])
-    result.add '='
-    result.add encodeQueryComponent(pair[1])
+  $url.query
 
 proc path*(url: Url): string =
   ## Returns the paths combined into a single path string.
