@@ -83,7 +83,7 @@ block:
   url.query["nothing"] = ""
   url.query["unicode"] = "шеллы"
   url.query["specials"] = "\n\t\b\r\"+&="
-  doAssert $url == "example.com?site=https%3A%2F%2Fnim-lang.org&https%3A%2F%2Fnim-lang.org=nice%21%21%21&nothing=&unicode=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&specials=%0A%09%08%0D%22%2B%26%3D"
+  doAssert $url == "example.com?site=https%3A%2F%2Fnim-lang.org&https%3A%2F%2Fnim-lang.org=nice!!!&nothing=&unicode=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&specials=%0A%09%08%0D%22%2B%26%3D"
   doAssert $parseUrl($url) == $url
 
 block:
@@ -143,3 +143,7 @@ block:
   let url = parseUrl(test)
   doAssert url.paths == @[""]
   doAssert url.query == @[("url", "1")]
+
+block:
+  doAssert encodeURIComponent("-._~!*'()") == "-._~!*'()"
+  doAssert decodeURIComponent("-._~!*'()") == "-._~!*'()"

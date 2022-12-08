@@ -34,7 +34,8 @@ proc encodeQueryComponent*(s: string): string =
     case c:
       of ' ':
         result.add '+'
-      of 'a'..'z', 'A'..'Z', '0'..'9', '-', '.', '_', '~':
+      of 'a'..'z', 'A'..'Z', '0'..'9',
+        '-', '.', '_', '~', '!', '*', '\'', '(', ')':
         result.add(c)
       else:
         result.add '%'
@@ -60,7 +61,8 @@ proc encodeURIComponent*(s: string): string =
   result = newStringOfCap(s.len)
   for c in s:
     case c:
-      of 'a'..'z', 'A'..'Z', '0'..'9', '-', '.', '_', '~':
+      of 'a'..'z', 'A'..'Z', '0'..'9',
+        '-', '.', '_', '~', '!', '*', '\'', '(', ')':
         result.add(c)
       else:
         result.add '%'
