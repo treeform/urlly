@@ -147,3 +147,9 @@ block:
 block:
   doAssert encodeURIComponent("-._~!*'()") == "-._~!*'()"
   doAssert decodeURIComponent("-._~!*'()") == "-._~!*'()"
+
+block:
+  let test = "?url=1&two=2"
+  let url = parseUrl(test)
+  doAssert url.paths == @[]
+  doAssert url.query == @[("url", "1"), ("two", "2")]
