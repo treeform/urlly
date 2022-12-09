@@ -10,7 +10,7 @@ This library has no dependencies other than the Nim standard library.
 
 ## About
 
-URL and URI parsing for Nim for C/JS backends. Similar api to browsers's `window.location`.
+URL and URI parsing for Nim for C/JS backends. Similar API to the browsers's `window.location`.
 
 This module works everywhere and parses everything! Including providing an easy way to work with the query key-value pairs.
 
@@ -72,7 +72,7 @@ But for most use cases a special `[]` is provided. This is the most common use o
 url.query["name"] == "ferret"
 ```
 
-If the key repeats multiple times only the first one is returned using the `[]` method. Use the for loop method if you need to support multiple keys or preserves special ordering.
+If the key repeats multiple times only the first one is returned when using the `[]` method. Use the for loop method if you need to support multiple keys or preserve special ordering.
 
 ```nim
 url.query["leg"] == "1"
