@@ -1,4 +1,4 @@
-import std/typetraits, std/strutils
+import std/strutils, std/typetraits
 
 type QueryParams* = distinct seq[(string, string)]
 

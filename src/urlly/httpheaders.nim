@@ -1,4 +1,4 @@
-import std/typetraits, std/strutils
+import std/strutils, std/typetraits
 
 type HttpHeaders* = distinct seq[(string, string)]
 
