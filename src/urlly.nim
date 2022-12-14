@@ -215,6 +215,18 @@ proc path*(url: Url): string =
       result.add '/'
       result.add encodeURIComponent(part)
 
+proc `path=`*(url: Url, s: string) =
+  if s == "":
+    url.paths.setLen(0)
+  elif s[0] == '/':
+    url.paths = s.split('/')[1 .. ^1]
+  else:
+    url.paths = s.split('/')
+
+  # We encodeURIComponent on the way out so decode on the way in
+  for path in url.paths.mitems:
+    path = decodeURIComponent(path)
+
 proc authority*(url: Url): string =
   ## Returns the authority part of URL as a string.
   ## Example: "admin:hunter1@example.com:8042"

@@ -153,3 +153,27 @@ block:
   let url = parseUrl(test)
   doAssert url.paths == @[]
   doAssert url.query == @[("url", "1"), ("two", "2")]
+
+block:
+  let url = Url()
+  url.path = "/a/b/c"
+  doAssert url.paths == @["a", "b", "c"]
+
+block:
+  let url = Url()
+  url.path = "/a/b/c/"
+  doAssert url.paths == @["a", "b", "c", ""]
+
+block:
+  let url = Url()
+  url.path = "a/b/c"
+  doAssert url.paths == @["a", "b", "c"]
+  url.path = ""
+  doAssert url.paths == @[]
+
+block:
+  let url = Url()
+  url.path = "a/b%20c/d"
+  doAssert url.paths == @["a", "b c", "d"]
+  url.path = ""
+  doAssert url.paths == @[]
