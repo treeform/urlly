@@ -134,7 +134,7 @@ proc parseSearch*(search: string): QueryParams =
           (decodeQueryComponent(pair[0]), decodeQueryComponent(pair[1]))
         else:
           (decodeQueryComponent(pair[0]), "")
-    result.add(kv)
+    result.toBase.add(kv)
 
 proc parseUrl*(s: string): Url =
   ## Parses a URL or a URL into the Url object.
