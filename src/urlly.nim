@@ -151,7 +151,7 @@ proc parseUrl*(s: string): Url =
     url.fragment = decodeURIComponent(s[hasFragment + 1 .. ^1])
     s = s[0 .. hasFragment - 1]
 
-  let hasSearch = s.rfind('?')
+  let hasSearch = s.find('?')
   if hasSearch != -1:
     let search = s[hasSearch + 1 .. ^1]
     s = s[0 .. hasSearch - 1]
