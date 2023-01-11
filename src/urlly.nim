@@ -134,7 +134,11 @@ proc parseSearch*(search: string): QueryParams =
           (decodeQueryComponent(pair[0]), decodeQueryComponent(pair[1]))
         else:
           (decodeQueryComponent(pair[0]), "")
-    result.add(kv)
+    when defined(js):
+      # Work round for JS bug: https://github.com/nim-lang/Nim/issues/21247
+      result.toBase.add(kv)
+    else:
+      result.add(kv)
 
 proc parseUrl*(s: string): Url =
   ## Parses a URL or a URL into the Url object.
@@ -147,7 +151,7 @@ proc parseUrl*(s: string): Url =
     url.fragment = decodeURIComponent(s[hasFragment + 1 .. ^1])
     s = s[0 .. hasFragment - 1]
 
-  let hasSearch = s.rfind('?')
+  let hasSearch = s.find('?')
   if hasSearch != -1:
     let search = s[hasSearch + 1 .. ^1]
     s = s[0 .. hasSearch - 1]
