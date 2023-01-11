@@ -134,7 +134,11 @@ proc parseSearch*(search: string): QueryParams =
           (decodeQueryComponent(pair[0]), decodeQueryComponent(pair[1]))
         else:
           (decodeQueryComponent(pair[0]), "")
-    result.toBase.add(kv)
+    when defined(js):
+      # Work round for JS bug: https://github.com/nim-lang/Nim/issues/21247
+      result.toBase.add(kv)
+    else:
+      result.add(kv)
 
 proc parseUrl*(s: string): Url =
   ## Parses a URL or a URL into the Url object.
