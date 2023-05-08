@@ -16,3 +16,4 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     - run: nimble test -y
     - run: nimble test --gc:orc -y
+    - run: nim js -r tests/test.nim

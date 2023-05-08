@@ -1,79 +1,79 @@
-import urlly, strutils
+import urlly
 
 block:
   let test = "foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose"
   let url = parseUrl(test)
-  assert url.scheme == "foo"
-  assert url.username == "admin"
-  assert url.password == "hunter1"
-  assert url.hostname == "example.com"
-  assert url.port == "8042"
-  assert url.host == "example.com:8042"
-  assert url.authority == "admin:hunter1@example.com:8042"
-  assert url.paths == @["over", "there"]
-  assert url.search == "name=ferret"
-  assert url.query["name"] == "ferret"
-  assert "name" in url.query
-  assert "nothing" notin url.query
-  assert url.fragment == "nose"
-  assert $url == test
+  doAssert url.scheme == "foo"
+  doAssert url.username == "admin"
+  doAssert url.password == "hunter1"
+  doAssert url.hostname == "example.com"
+  doAssert url.port == "8042"
+  doAssert url.host == "example.com:8042"
+  doAssert url.authority == "admin:hunter1@example.com:8042"
+  doAssert url.paths == @["over", "there"]
+  doAssert url.search == "name=ferret"
+  doAssert url.query["name"] == "ferret"
+  doAssert "name" in url.query
+  doAssert "nothing" notin url.query
+  doAssert url.fragment == "nose"
+  doAssert $url == test
 
 block:
   let test = "/over/there?name=ferret"
   let url = parseUrl(test)
-  assert url.scheme == ""
-  assert url.username == ""
-  assert url.password == ""
-  assert url.hostname == ""
-  assert url.port == ""
-  assert url.authority == ""
-  assert url.paths == @["over", "there"]
-  assert url.search == "name=ferret"
-  assert url.query["name"] == "ferret"
-  assert url.fragment == ""
-  assert $url == test
+  doAssert url.scheme == ""
+  doAssert url.username == ""
+  doAssert url.password == ""
+  doAssert url.hostname == ""
+  doAssert url.port == ""
+  doAssert url.authority == ""
+  doAssert url.paths == @["over", "there"]
+  doAssert url.search == "name=ferret"
+  doAssert url.query["name"] == "ferret"
+  doAssert url.fragment == ""
+  doAssert $url == test
 
 block:
   let test = "?name=ferret&age=12&leg=1&leg=2&leg=3&leg=4"
   let url = parseUrl(test)
-  assert url.scheme == ""
-  assert url.username == ""
-  assert url.password == ""
-  assert url.hostname == ""
-  assert url.port == ""
-  assert url.paths == @[]
-  assert url.authority == ""
-  assert url.search == "name=ferret&age=12&leg=1&leg=2&leg=3&leg=4"
-  assert url.query["name"] == "ferret"
-  assert url.query["age"] == "12"
-  assert url.query["leg"] == "1"
-  assert "name" in url.query
-  assert "age" in url.query
-  assert "leg" in url.query
-  assert "eye" notin url.query
-  assert $url.query == """@[("name", "ferret"), ("age", "12"), ("leg", "1"), ("leg", "2"), ("leg", "3"), ("leg", "4")]"""
-  assert url.fragment == ""
-  assert $url == test
+  doAssert url.scheme == ""
+  doAssert url.username == ""
+  doAssert url.password == ""
+  doAssert url.hostname == ""
+  doAssert url.port == ""
+  doAssert url.paths == @[]
+  doAssert url.authority == ""
+  doAssert url.search == "name=ferret&age=12&leg=1&leg=2&leg=3&leg=4"
+  doAssert url.query["name"] == "ferret"
+  doAssert url.query["age"] == "12"
+  doAssert url.query["leg"] == "1"
+  doAssert "name" in url.query
+  doAssert "age" in url.query
+  doAssert "leg" in url.query
+  doAssert "eye" notin url.query
+  doAssert url.search == "name=ferret&age=12&leg=1&leg=2&leg=3&leg=4"
+  doAssert url.fragment == ""
+  doAssert $url == test
 
   var i = 1
   for (k, v) in url.query:
     if k == "leg":
-      assert v == $i
+      doAssert v == $i
       inc i
 
-  assert url.query["missing"] == ""
+  doAssert url.query["missing"] == ""
 
 block:
   let test = "?name=&age&legs=4"
   let url = parseUrl(test)
-  assert url.query == @[("name", ""), ("age", ""), ("legs", "4")]
+  doAssert url.query == @[("name", ""), ("age", ""), ("legs", "4")]
 
 block:
   var url = Url()
   url.hostname = "example.com"
   url.query["q"] = "foo"
   url.fragment = "heading1"
-  assert $url == "example.com?q=foo#heading1"
+  doAssert $url == "example.com?q=foo#heading1"
 
 block:
   var url = Url()
@@ -83,31 +83,97 @@ block:
   url.query["nothing"] = ""
   url.query["unicode"] = "шеллы"
   url.query["specials"] = "\n\t\b\r\"+&="
-  assert $url == "example.com?site=https%3A%2F%2Fnim-lang.org&https%3A%2F%2Fnim-lang.org=nice%21%21%21&nothing=&unicode=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&specials=%0A%09%08%0D%22%2B%26%3D"
-  assert $parseUrl($url) == $url
+  doAssert $url == "example.com?site=https%3A%2F%2Fnim-lang.org&https%3A%2F%2Fnim-lang.org=nice!!!&nothing=&unicode=%D1%88%D0%B5%D0%BB%D0%BB%D1%8B&specials=%0A%09%08%0D%22%2B%26%3D"
+  doAssert $parseUrl($url) == $url
 
 block:
   let test = "http://localhost:8080/p2/foo+and+other+stuff"
   let url = parseUrl(test)
-  assert url.paths == @["p2", "foo+and+other+stuff"]
-  assert $url == "http://localhost:8080/p2/foo+and+other+stuff"
+  doAssert url.paths == @["p2", "foo+and+other+stuff"]
+  doAssert $url == "http://localhost:8080/p2/foo%2Band%2Bother%2Bstuff"
+
+block:
+  let test = "http://localhost:8080/p2/foo%2Band%2Bother%2Bstuff"
+  let url = parseUrl(test)
+  doAssert url.paths == @["p2", "foo+and+other+stuff"]
+  doAssert $url == "http://localhost:8080/p2/foo%2Band%2Bother%2Bstuff"
 
 block:
   let test = "http://localhost:8080/p2/foo%2Fand%2Fother%2Fstuff"
   let url = parseUrl(test)
-  assert url.paths == @["p2", "foo/and/other/stuff"]
-  assert $url == "http://localhost:8080/p2/foo%2Fand%2Fother%2Fstuff"
-
+  doAssert url.paths == @["p2", "foo/and/other/stuff"]
+  doAssert $url == "http://localhost:8080/p2/foo%2Fand%2Fother%2Fstuff"
 
 block:
-  let test = "http://localhost:8080/p2/#foo+and+other+stuff"
+  let test = "http://localhost:8080/p2/#foo%2Band%2Bother%2Bstuff"
   let url = parseUrl(test)
-  assert url.paths == @["p2", ""]
-  assert url.fragment == "foo+and+other+stuff"
-  assert $url == "http://localhost:8080/p2/#foo+and+other+stuff"
+  doAssert url.paths == @["p2", ""]
+  doAssert url.fragment == "foo+and+other+stuff"
+  doAssert $url == "http://localhost:8080/p2/#foo%2Band%2Bother%2Bstuff"
 
 block:
   let test = "name=&age&legs=4"
   let url = parseUrl(test)
-  echo url.hostname
-  assert url.query == @[("name", ""), ("age", ""), ("legs", "4")]
+  doAssert url.query == @[("name", ""), ("age", ""), ("legs", "4")]
+
+block:
+  let test = "name=&age&legs=4&&&"
+  let url = parseUrl(test)
+  doAssert url.query ==
+    @[("name", ""), ("age", ""), ("legs", "4"), ("", ""), ("", ""), ("", "")]
+
+block:
+  let test = "https://localhost:8080"
+  let url = parseUrl(test)
+  doAssert url.paths == @[]
+
+block:
+  let test = "https://localhost:8080/"
+  let url = parseUrl(test)
+  doAssert url.paths == @[""]
+
+block:
+  let test = "https://localhost:8080/&url=1"
+  let url = parseUrl(test)
+  doAssert url.paths == @[""]
+  doAssert url.query == @[("url", "1")]
+
+block:
+  let test = "https://localhost:8080/?url=1"
+  let url = parseUrl(test)
+  doAssert url.paths == @[""]
+  doAssert url.query == @[("url", "1")]
+
+block:
+  doAssert encodeURIComponent("-._~!*'()") == "-._~!*'()"
+  doAssert decodeURIComponent("-._~!*'()") == "-._~!*'()"
+
+block:
+  let test = "?url=1&two=2"
+  let url = parseUrl(test)
+  doAssert url.paths == @[]
+  doAssert url.query == @[("url", "1"), ("two", "2")]
+
+block:
+  let url = Url()
+  url.path = "/a/b/c"
+  doAssert url.paths == @["a", "b", "c"]
+
+block:
+  let url = Url()
+  url.path = "/a/b/c/"
+  doAssert url.paths == @["a", "b", "c", ""]
+
+block:
+  let url = Url()
+  url.path = "a/b/c"
+  doAssert url.paths == @["a", "b", "c"]
+  url.path = ""
+  doAssert url.paths == @[]
+
+block:
+  let url = Url()
+  url.path = "a/b%20c/d"
+  doAssert url.paths == @["a", "b c", "d"]
+  url.path = ""
+  doAssert url.paths == @[]
