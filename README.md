@@ -4,7 +4,7 @@
 
 ![Github Actions](https://github.com/treeform/urlly/workflows/Github%20Actions/badge.svg)
 
-[API reference](https://nimdocs.com/treeform/urlly)
+[API reference](https://treeform.github.io/urlly)
 
 This library has no dependencies other than the Nim standard library.
 
