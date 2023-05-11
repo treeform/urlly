@@ -1,0 +1,23 @@
+Url	urlly.html#Url	urlly: Url	
+QueryParams	urlly.html#QueryParams	urlly: QueryParams	
+toBase	urlly.html#toBase.c,QueryParams	urlly: toBase(params: var QueryParams): var seq[(string, string)]	
+toBase	urlly.html#toBase.c,QueryParams_2	urlly: toBase(params: QueryParams): seq[(string, string)]	
+encodeQueryComponent	urlly.html#encodeQueryComponent,string	urlly: encodeQueryComponent(s: string): string	
+decodeQueryComponent	urlly.html#decodeQueryComponent,string	urlly: decodeQueryComponent(s: string): string	
+encodeURIComponent	urlly.html#encodeURIComponent,string	urlly: encodeURIComponent(s: string): string	
+encodeUrlComponent	urlly.html#encodeUrlComponent,string	urlly: encodeUrlComponent(s: string): string	
+decodeURIComponent	urlly.html#decodeURIComponent,string	urlly: decodeURIComponent(s: string): string	
+decodeUrlComponent	urlly.html#decodeUrlComponent,string	urlly: decodeUrlComponent(s: string): string	
+`[]`	urlly.html#[],QueryParams,string	urlly: `[]`(query: QueryParams; key: string): string	
+`[]=`	urlly.html#[]=,QueryParams,string,string	urlly: `[]=`(query: var QueryParams; key, value: string)	
+contains	urlly.html#contains,QueryParams,string	urlly: contains(query: QueryParams; key: string): bool	
+add	urlly.html#add,QueryParams,QueryParams	urlly: add(query: var QueryParams; params: QueryParams)	
+`$`	urlly.html#$,QueryParams	urlly: `$`(query: QueryParams): string	
+parseSearch	urlly.html#parseSearch,string	urlly: parseSearch(search: string): QueryParams	
+parseUrl	urlly.html#parseUrl,string	urlly: parseUrl(s: string): Url	
+host	urlly.html#host,Url	urlly: host(url: Url): string	
+search	urlly.html#search,Url	urlly: search(url: Url): string	
+path	urlly.html#path,Url	urlly: path(url: Url): string	
+path=	urlly.html#path=,Url,string	urlly: path=(url: Url; s: string)	
+authority	urlly.html#authority,Url	urlly: authority(url: Url): string	
+`$`	urlly.html#$,Url	urlly: `$`(url: Url): string	
