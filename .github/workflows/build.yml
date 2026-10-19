@@ -6,14 +6,38 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        nim: [stable, devel]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: jiro4989/setup-nim-action@v1
+    - uses: actions/checkout@v6
+    - uses: jiro4989/setup-nim-action@v2
+      if: runner.os != 'Windows' || matrix.nim != 'devel'
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-    - run: nimble test -y
-    - run: nimble test --gc:orc -y
+        nim-version: ${{ matrix.nim }}
+        use-nightlies: true
+    - name: Install Nim devel on Windows
+      if: runner.os == 'Windows' && matrix.nim == 'devel'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        archive="$RUNNER_TEMP/nim-devel.zip"
+        extracted="$RUNNER_TEMP/nim-devel"
+        curl --fail --location --silent --show-error \
+          https://github.com/nim-lang/nightlies/releases/download/latest-devel/windows_x64.zip \
+          --output "$archive"
+        digest="$(gh api repos/nim-lang/nightlies/releases/tags/latest-devel \
+          --jq '.assets[] | select(.name == "windows_x64.zip") | .digest')"
+        printf '%s  %s\n' "${digest#sha256:}" "$archive" | sha256sum --check -
+        mkdir -p "$extracted"
+        unzip -q "$archive" -d "$extracted"
+        nim_roots=("$extracted"/nim-*)
+        test -f "${nim_roots[0]}/bin/nim.exe"
+        cygpath -w "${nim_roots[0]}/bin" >> "$GITHUB_PATH"
+        echo 'C:/msys64/mingw64/bin' >> "$GITHUB_PATH"
+    - run: nim c -r --mm:arc tests/test.nim
+    - run: nim c -r --mm:orc tests/test.nim
     - run: nim js -r tests/test.nim

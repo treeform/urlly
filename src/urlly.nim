@@ -25,6 +25,16 @@ converter toBase*(params: var QueryParams): var seq[(string, string)] =
 converter toBase*(params: QueryParams): seq[(string, string)] =
   params.distinctBase
 
+iterator items*(params: QueryParams): (string, string) =
+  ## Iterates over query parameters in their original order.
+  for pair in params.toBase:
+    yield pair
+
+iterator pairs*(params: QueryParams): tuple[key: int, val: (string, string)] =
+  ## Iterates over query parameters with their positions.
+  for i, pair in params.toBase:
+    yield (i, pair)
+
 proc encodeQueryComponent*(s: string): string =
   ## Similar to encodeURIComponent, however query parameter spaces should
   ## be +, not %20 like encodeURIComponent would encode them.

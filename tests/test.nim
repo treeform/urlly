@@ -1,6 +1,25 @@
 import urlly
 
 block:
+  let query = parseSearch("tag=one&tag=two")
+  var entries: seq[(string, string)]
+  for pair in query:
+    entries.add pair
+  doAssert entries == @[("tag", "one"), ("tag", "two")]
+
+  var indexed: seq[(int, (string, string))]
+  for i, pair in query:
+    indexed.add (i, pair)
+  doAssert indexed == @[(0, ("tag", "one")), (1, ("tag", "two"))]
+
+  var updated = query
+  updated["tag"] = "three"
+  updated.add(parseSearch("page=2"))
+  doAssert "tag" in updated
+  doAssert "missing" notin updated
+  doAssert $updated == "tag=three&tag=two&page=2"
+
+block:
   let test = "foo://admin:hunter1@example.com:8042/over/there?name=ferret#nose"
   let url = parseUrl(test)
   doAssert url.scheme == "foo"
